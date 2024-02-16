@@ -105,3 +105,13 @@ a {
     color-scheme: dark;
   }
 }
+
+
+
+.wrapper{
+  margin-top: 50px;
+  margin-bottom: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
