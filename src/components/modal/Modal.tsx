@@ -10,7 +10,7 @@ const Modal = ({ setIsOpen, pokemon }: any) => {
         <div className={styles.modal}>
           <h3 className={styles.heading}>{pokemon.name}</h3>
 
-          <img src={pokemon.sprites.front_default} alt="" />
+          <img src={pokemon.sprites.front_default} alt={pokemon.name} />
           <div className={styles.types}>
             {pokemon.types.map((e: any) => {
               return <p key={e.type.name}>{e.type.name}</p>;

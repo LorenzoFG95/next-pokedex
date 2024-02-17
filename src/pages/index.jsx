@@ -5,18 +5,21 @@ import styles from "@/styles/Home.module.scss";
 import Card from "../components/card";
 import { useState, useEffect } from "react";
 import Modal from "@/components/modal";
+import Pokedex from "@/components/Pokedex";
+import Selector from "@/components/selector";
 
 export default function Home() {
+  const [selectedGen, setSelectedGen] = useState("limit=151");
   const [pokemon, setPokemon] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentPokemon, setCurrentPokemon] = useState();
+
   useEffect(() => {
-    fetch("https://pokeapi.co/api/v2/pokemon/?limit=151")
+    fetch(`https://pokeapi.co/api/v2/pokemon/?${selectedGen}`)
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         setPokemon(data.results);
       });
-  }, []);
+  }, [selectedGen]);
   return (
     <>
       <Head>
@@ -25,21 +28,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="wrapper">
-        {" "}
-        {isOpen && <Modal setIsOpen={setIsOpen} pokemon={currentPokemon} />}
-        {pokemon.map((pokemon) => {
-          return (
-            <Card
-              key={pokemon.name}
-              nome={pokemon.name}
-              url={pokemon.url}
-              setIsOpen={setIsOpen}
-              setCurrentPokemon={setCurrentPokemon}
-            />
-          );
-        })}
-      </div>
+      <Selector setSelectedGen={setSelectedGen} />
+
+      <Pokedex pokemon={pokemon} />
     </>
   );
 }
