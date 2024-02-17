@@ -11,13 +11,19 @@ const Card = (props: any) => {
         }
       })
       .then((data) => {
-        console.log(data);
         setPokemonData(data);
       });
   }, [props.nome]);
   if (!pokemonData) return <h1>Loading</h1>;
   return (
-    <div className={styles.card}>
+    <div
+      className={styles.card}
+      onClick={() => {
+        props.setIsOpen(true);
+        props.setCurrentPokemon(pokemonData);
+        //console.log(pokemonData);
+      }}
+    >
       <h2>{props.nome}</h2>
       <img src={pokemonData.sprites.front_default} alt={props.nome} />
 
