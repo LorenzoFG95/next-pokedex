@@ -1,25 +1,9 @@
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.scss";
+import Link from "next/link";
 import Card from "../components/card";
-import { useState, useEffect } from "react";
-import Modal from "@/components/modal";
-import Pokedex from "@/components/Pokedex";
-import Selector from "@/components/selector";
 
-export default function Home() {
-  const [selectedGen, setSelectedGen] = useState("limit=151");
-  const [pokemon, setPokemon] = useState([]);
-
-  useEffect(() => {
-    fetch(`https://pokeapi.co/api/v2/pokemon/?${selectedGen}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setPokemon(data.results);
-      });
-  }, [selectedGen]);
+export default function Home({ pokemonData, error }) {
+  if (error) return <h1>Errore nel download</h1>;
   return (
     <>
       <Head>
@@ -28,9 +12,39 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Selector setSelectedGen={setSelectedGen} />
 
-      <Pokedex pokemon={pokemon} />
+      {pokemonData.map((pokemon) => (
+        <Link href={`/pokemon/${pokemon.name}`} key={pokemon.id}>
+          <Card pokemon={pokemon} />
+        </Link>
+      ))}
     </>
   );
+}
+
+export async function getServerSideProps() {
+  const pokemonNames = ["bulbasaur", "charmander", "squirtle"];
+
+  try {
+    const pokemonDataPromises = pokemonNames.map(async (pokemon) => {
+      const response = await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${pokemon}`
+      );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch data for ${name}`);
+      }
+      const { id, name, types, sprites } = await response.json();
+      return { id, name, types, sprites };
+    });
+
+    const pokemonData = await Promise.all(pokemonDataPromises);
+    return {
+      props: { pokemonData },
+    };
+  } catch (error) {
+    console.error("Error fetching Pokemon data:", error.message);
+    return {
+      props: { error: "Failed to fetch Pokemon data" },
+    };
+  }
 }
